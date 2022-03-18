@@ -27,8 +27,8 @@ public class register extends AppCompatActivity {
         Button register = findViewById(R.id.registerbutton);
 
         SharedPreferences passlock = PreferenceManager.getDefaultSharedPreferences(this);
-        String passDetails = passlock.getString("data", null);
-        if(!( passDetails.equals(null) )) {
+        String passDetails = passlock.getString("data", "null");
+        if(!( passDetails.equals("null") )) {
             startActivity(logintime);
         }
 
