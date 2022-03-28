@@ -12,17 +12,18 @@
         android:id="@+id/check"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:onClick="getallapps"
         android:text="Get Installed Apps"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/facebutton" />
 
     <TextView
         android:id="@+id/totalapp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/check" />
@@ -35,4 +36,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/totalapp"
         tools:layout_editor_absoluteY="150dp" />
+
+    <Button
+        android:id="@+id/facebutton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Up Face Recognition"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
