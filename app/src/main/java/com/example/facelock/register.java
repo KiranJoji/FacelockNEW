@@ -2,8 +2,12 @@ package com.example.facelock;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AppOpsManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -18,6 +22,10 @@ public class register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (!isAccessGranted()) {
+            Intent setting = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            startActivity(setting);
+        }
         setContentView(R.layout.register);
 
         Intent logintime = new Intent(register.this, login.class);
@@ -48,5 +56,22 @@ public class register extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private boolean isAccessGranted() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
+            AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int mode = 0;
+            if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
+                mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        applicationInfo.uid, applicationInfo.packageName);
+            }
+            return (mode == AppOpsManager.MODE_ALLOWED);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
     }
 }
