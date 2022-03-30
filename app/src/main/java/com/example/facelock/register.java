@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -25,6 +27,10 @@ public class register extends AppCompatActivity {
         if (!isAccessGranted()) {
             Intent setting = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(setting);
+        }
+        if (!isAccessGrantedtwo()) {
+            Intent draw = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
+            startActivity(draw);
         }
         setContentView(R.layout.register);
 
@@ -66,6 +72,23 @@ public class register extends AppCompatActivity {
             int mode = 0;
             if (android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.KITKAT) {
                 mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS,
+                        applicationInfo.uid, applicationInfo.packageName);
+            }
+            return (mode == AppOpsManager.MODE_ALLOWED);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        }
+    }
+
+    private boolean isAccessGrantedtwo() {
+        try {
+            PackageManager packageManager = getPackageManager();
+            ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
+            AppOpsManager appOpsManager = (AppOpsManager) getSystemService(Context.APP_OPS_SERVICE);
+            int mode = 0;
+            if (android.os.Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                mode = appOpsManager.checkOpNoThrow(AppOpsManager.OPSTR_SYSTEM_ALERT_WINDOW,
                         applicationInfo.uid, applicationInfo.packageName);
             }
             return (mode == AppOpsManager.MODE_ALLOWED);

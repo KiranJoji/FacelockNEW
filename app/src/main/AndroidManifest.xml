@@ -21,7 +21,7 @@
         </activity>
         <activity android:name=".login"></activity>
         <activity android:name=".mainpage"></activity>
-        <activity android:name=".facelay"></activity>
+        <activity android:name=".faceset"></activity>
 
         <meta-data
             android:name="preloaded_fonts"

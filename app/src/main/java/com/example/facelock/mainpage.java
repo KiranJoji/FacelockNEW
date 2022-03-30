@@ -17,12 +17,10 @@ import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +46,7 @@ public class mainpage extends AppCompatActivity {
         face.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent faceit = new Intent(mainpage.this, facelay.class);
+                Intent faceit = new Intent(mainpage.this, faceset.class);
                 startActivity(faceit);
             }
         });
