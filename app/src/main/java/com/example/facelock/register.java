@@ -36,7 +36,7 @@ public class register extends AppCompatActivity {
 
         SharedPreferences passlock = PreferenceManager.getDefaultSharedPreferences(this);
         String passDetails = passlock.getString("data", "null");
-        if(!( passDetails.equals("null") )) {
+        if(!(passDetails.equals("null") )) {
             startActivity(logintime);
         }
 

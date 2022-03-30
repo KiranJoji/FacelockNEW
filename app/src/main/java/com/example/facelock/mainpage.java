@@ -2,30 +2,38 @@ package com.example.facelock;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
+import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class mainpage extends AppCompatActivity {
     TextView text;
     ListView listView;
     List<String> apps;
     Button face;
+    SharedPreferences block;
+    ArrayList<String> blockedlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,7 @@ public class mainpage extends AppCompatActivity {
         listView = findViewById(R.id.listview);
         text = findViewById(R.id.totalapp);
         face = findViewById(R.id.facebutton);
+        block = getSharedPreferences("blocklist", MODE_PRIVATE);
 
         face.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,24 +94,49 @@ public class mainpage extends AppCompatActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder mainViewholder = null;
+            ViewHolder mainViewHolder = null;
+            blockedlist = new ArrayList<String>();
+            blockedlist = retrieveList(blockedlist);
             if (convertView == null) {
                 LayoutInflater inflater = LayoutInflater.from(getContext());
                 convertView = inflater.inflate(layout, parent, false);
                 ViewHolder viewHolder = new ViewHolder();
                 viewHolder.applistname = (TextView) convertView.findViewById(R.id.appname);
                 viewHolder.applistswitch = (Switch) convertView.findViewById(R.id.appswitch);
-                viewHolder.applistswitch.setOnClickListener(new View.OnClickListener() {
+                if(!(blockedlist.isEmpty()) && blockedlist.contains(viewHolder.applistname.getText().toString())) {
+                    viewHolder.applistswitch.setChecked(true);
+                }
+                viewHolder.applistswitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
-                    public void onClick(View view) {
-                        Toast.makeText(getContext(), "Button was clicked for list item " + position, Toast.LENGTH_SHORT);
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+                        if(isChecked) {
+                            blockedlist = retrieveList(blockedlist);
+                            String appname = viewHolder.applistname.getText().toString();
+                            Log.d("apple4","new "+blockedlist);
+                            if(!(blockedlist.contains(appname))) {
+                                blockedlist.add(appname);
+                                Log.d("apple","saved "+appname);
+                            }
+                            saveList(blockedlist);
+                        }
+                        else {
+                            blockedlist = retrieveList(blockedlist);
+                            String appname = viewHolder.applistname.getText().toString();
+                            Log.d("apple2","removed "+appname);
+                            blockedlist = removeInstance(blockedlist, appname);
+                            Log.d("apple3","new "+blockedlist);
+                            saveList(blockedlist);
+                        }
                     }
                 });
                 convertView.setTag(viewHolder);
             }
             else {
-                mainViewholder = (ViewHolder) convertView.getTag();
-                mainViewholder.applistname.setText(getItem(position));
+                mainViewHolder = (ViewHolder) convertView.getTag();
+                mainViewHolder.applistname.setText(getItem(position));
+                if(!(blockedlist.isEmpty()) && blockedlist.contains(mainViewHolder.applistname.getText().toString())) {
+                    mainViewHolder.applistswitch.setChecked(true);
+                }
             }
 
             return convertView;
@@ -114,6 +148,42 @@ public class mainpage extends AppCompatActivity {
         TextView applistname;
     }
 
+    private void saveList(ArrayList<String> listblock) {
+        SharedPreferences.Editor editor = block.edit();
+        if(!(listblock.isEmpty())) {
+            Set<String> set = new HashSet<String>();
+            set.addAll(listblock);
+            editor.clear();
+            editor.putStringSet("blocklist", set);
+            editor.apply();
+            Log.d("storesharedPref","saved "+listblock);
+        }
+        else {
+            editor.clear();
+            editor.apply();
+        }
+    }
+
+    private ArrayList<String> retrieveList(ArrayList<String> listblock) {
+        Set<String> set = block.getStringSet("blocklist", null);
+        if(set != null) {
+            listblock.addAll(set);
+            Log.d("retrievesharedPref","retrieved "+listblock);
+            return listblock;
+        }
+        else {
+            return new ArrayList<String>();
+        }
+    }
+
+    private ArrayList<String> removeInstance(ArrayList<String> listblock, String remove) {
+        for(int i = 0; i < listblock.size(); i++ ) {
+            if(listblock.get(i).equals(remove)) {
+                listblock.remove(i);
+            }
+        }
+        return listblock;
+    }
 
     @Override
     protected void onStart() {
