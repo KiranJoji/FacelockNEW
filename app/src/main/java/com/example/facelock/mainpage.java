@@ -52,7 +52,18 @@ public class mainpage extends AppCompatActivity {
         });
     }
 
+    public void startService(View v) {
+        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        startService(serviceIntent);
+    }
+
+    public void stopService() {
+        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        stopService(serviceIntent);
+    }
+
     public void getallapps(View view) throws PackageManager.NameNotFoundException {
+        startService(view);
         final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
         mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 

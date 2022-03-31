@@ -24,11 +24,11 @@ public class register extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!isAccessGranted()) {
+        if (!isAccessGrantedUsage()) {
             Intent setting = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
             startActivity(setting);
         }
-        if (!isAccessGrantedtwo()) {
+        if (!isAccessGrantedDraw()) {
             Intent draw = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
             startActivity(draw);
         }
@@ -64,7 +64,7 @@ public class register extends AppCompatActivity {
         });
     }
 
-    private boolean isAccessGranted() {
+    private boolean isAccessGrantedUsage() {
         try {
             PackageManager packageManager = getPackageManager();
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);
@@ -81,7 +81,7 @@ public class register extends AppCompatActivity {
         }
     }
 
-    private boolean isAccessGrantedtwo() {
+    private boolean isAccessGrantedDraw() {
         try {
             PackageManager packageManager = getPackageManager();
             ApplicationInfo applicationInfo = packageManager.getApplicationInfo(getPackageName(), 0);

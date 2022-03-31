@@ -4,12 +4,24 @@
     package="com.example.facelock">
 
     <application
+        android:name=".LockChannel"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Facelock">
+
+        <!-- <receiver
+            android:name=".ForegroundReceiver"
+            android:enabled="true"
+            android:exported="false"></receiver> -->
+
+        <service
+            android:name=".ForegroundService"
+            android:enabled="true"
+            android:exported="true" />
+
         <activity
             android:name=".register"
             android:exported="true">
@@ -31,6 +43,9 @@
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- <uses-permission android:name="android.permission.CAMERA"/> -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
     <permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <queries>
