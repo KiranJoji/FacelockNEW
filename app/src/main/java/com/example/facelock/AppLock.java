@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class lock extends AppCompatActivity {
+public class AppLock extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

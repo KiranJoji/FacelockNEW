@@ -1,5 +1,6 @@
 package com.example.facelock;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,41 +26,71 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class mainpage extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     TextView text;
     ListView listView;
     List<String> apps;
     Button face;
     SharedPreferences block;
     ArrayList<String> blockedlist;
+    Intent serviceIntent;
+    private LockService lockService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.mainpage);
+        setContentView(R.layout.mainactivity);
 
         listView = findViewById(R.id.listview);
         text = findViewById(R.id.totalapp);
         face = findViewById(R.id.facebutton);
         block = getSharedPreferences("blocklist", MODE_PRIVATE);
 
+        lockService = new LockService();
+        serviceIntent = new Intent(this, lockService.getClass());
+        if (!isMyServiceRunning(lockService.getClass())) {
+            startService(serviceIntent);
+        }
+
         face.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent faceit = new Intent(mainpage.this, faceset.class);
+                Intent faceit = new Intent(MainActivity.this, SetFace.class);
                 startActivity(faceit);
             }
         });
     }
 
     public void startService(View v) {
-        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        Intent serviceIntent = new Intent(this, LockService.class);
         startService(serviceIntent);
     }
 
     public void stopService() {
-        Intent serviceIntent = new Intent(this, ForegroundService.class);
+        Intent serviceIntent = new Intent(this, LockService.class);
         stopService(serviceIntent);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("Service status", "Running");
+                return true;
+            }
+        }
+        Log.i ("Service status", "Not running");
+        return false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        //stopService(mServiceIntent);
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction("restartservice");
+        broadcastIntent.setClass(this, RestarterLockReciever.class);
+        this.sendBroadcast(broadcastIntent);
+        super.onDestroy();
     }
 
     public void getallapps(View view) throws PackageManager.NameNotFoundException {
@@ -89,7 +120,7 @@ public class mainpage extends AppCompatActivity {
         }
         java.util.Collections.sort(apps);
         // set all the apps name in list view
-        listView.setAdapter(new MyListAdapter(this, R.layout.applistlayout, apps));
+        listView.setAdapter(new MyListAdapter(this, R.layout.applistitem, apps));
         // write total count of apps available.
         text.setText(installed.size() + " Apps are installed");
     }
@@ -173,7 +204,7 @@ public class mainpage extends AppCompatActivity {
         }
     }
 
-    private ArrayList<String> retrieveList(ArrayList<String> listblock) {
+    public ArrayList<String> retrieveList(ArrayList<String> listblock) {
         Set<String> set = block.getStringSet("blocklist", null);
         if(set != null) {
             listblock.addAll(set);

@@ -1,6 +1,5 @@
 package com.example.facelock;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -11,13 +10,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class login extends AppCompatActivity {
+public class Login extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-        Intent entertime = new Intent(login.this, mainpage.class);
+        Intent entertime = new Intent(Login.this, MainActivity.class);
 
         final EditText enter = findViewById(R.id.password);
         Button loginb = findViewById(R.id.loginbutton);

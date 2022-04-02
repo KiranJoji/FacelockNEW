@@ -12,18 +12,33 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Facelock">
 
-        <!-- <receiver
-            android:name=".ForegroundReceiver"
+        <receiver
+            android:name=".RebootLockReceiver"
             android:enabled="true"
-            android:exported="false"></receiver> -->
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".RestarterLockReciever"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="restartservice" />
+            </intent-filter>
+        </receiver>
 
         <service
-            android:name=".ForegroundService"
+            android:name=".LockService"
             android:enabled="true"
             android:exported="true" />
 
         <activity
-            android:name=".register"
+            android:name=".Register"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,9 +46,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".login"></activity>
-        <activity android:name=".mainpage"></activity>
-        <activity android:name=".faceset"></activity>
+        <activity android:name=".Login"></activity>
+        <activity android:name=".MainActivity"></activity>
+        <activity android:name=".SetFace"></activity>
 
         <meta-data
             android:name="preloaded_fonts"
@@ -46,7 +61,7 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- <uses-permission android:name="android.permission.CAMERA"/> -->
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"/>
-    <permission android:name="android.permission.QUERY_ALL_PACKAGES" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <queries>
         <intent>
