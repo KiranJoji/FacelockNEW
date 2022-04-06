@@ -78,7 +78,8 @@ public class LockService extends Service {
                 Log.d("appname","" + app.trim());
                 Log.d("appname","" + blockedlist);
                 if (blockedlist.contains(app.trim())) {
-                    Log.d("check","dude block has been launched");
+                    // instantiate block screen here
+                    Log.d("check","put block here");
                 }
             }
         }, 1000, 1000);
