@@ -16,6 +16,7 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        //here is the intent to move to new page
         Intent entertime = new Intent(Login.this, MainActivity.class);
 
         final EditText enter = findViewById(R.id.password);
@@ -32,6 +33,7 @@ public class Login extends AppCompatActivity {
 
                 if(check.equals(passDetails)) {
                     startActivity(entertime);
+                    //startActivity is a function in java that runs the intent
                 }
                 else {
                     error.setText("Error: Wrong Password");
