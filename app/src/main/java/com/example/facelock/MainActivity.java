@@ -1,13 +1,44 @@
 package com.example.facelock;
 
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import android.Manifest;
+import android.annotation.TargetApi;
+import android.app.KeyguardManager;
+import android.content.pm.PackageManager;
+import android.hardware.fingerprint.FingerprintManager;
+import android.os.Build;
+import android.security.keystore.KeyGenParameterSpec;
+import android.security.keystore.KeyPermanentlyInvalidatedException;
+import android.security.keystore.KeyProperties;
+//import android.support.v4.content.ContextCompat;
+//import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,9 +48,6 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
-import android.widget.TextView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     TextView text;
     ListView listView;
     List<String> apps;
-    Button face;
     SharedPreferences block;
     ArrayList<String> blockedlist;
     Intent serviceIntent;
@@ -43,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
         listView = findViewById(R.id.listview);
         text = findViewById(R.id.totalapp);
-        face = findViewById(R.id.facebutton);
         block = getSharedPreferences("blocklist", MODE_PRIVATE);
 
         lockService = new LockService();
@@ -51,14 +77,6 @@ public class MainActivity extends AppCompatActivity {
         if (!isMyServiceRunning(lockService.getClass())) {
             startService(serviceIntent);
         }
-
-        face.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent faceit = new Intent(MainActivity.this, SetFace.class);
-                startActivity(faceit);
-            }
-        });
     }
 
     public void startService(View v) {
@@ -86,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         //stopService(mServiceIntent);
+        Log.i ("Service status", "Not running");
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("restartservice");
         broadcastIntent.setClass(this, RestarterLockReciever.class);
@@ -216,18 +235,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private ArrayList<String> removeInstance(ArrayList<String> listblock, String remove) {
+    private ArrayList<String> removeInstance(ArrayList<String> listblock, String remov) {
+        if(listblock.get(0).equals(remov)) {
+            listblock.remove(0);
+        }
         for(int i = 0; i < listblock.size(); i++ ) {
-            if(listblock.get(i).equals(remove)) {
+            if(listblock.get(i).equals(remov)) {
                 listblock.remove(i);
             }
         }
         return listblock;
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
-// the getLaunchIntentForPackage returns an intent that you can use with startActivity()
+
 }

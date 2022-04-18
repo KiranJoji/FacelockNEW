@@ -17,7 +17,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
         //here is the intent to move to new page
-        Intent entertime = new Intent(Login.this, MainActivity.class);
+        Intent entertime = new Intent(Login.this, ScanFinger.class);
 
         final EditText enter = findViewById(R.id.password);
         Button loginb = findViewById(R.id.loginbutton);

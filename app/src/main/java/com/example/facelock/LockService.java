@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.text.TextUtils;
@@ -32,6 +33,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class LockService extends Service {
 
@@ -40,6 +43,9 @@ public class LockService extends Service {
     SharedPreferences block;
     MainActivity acquire;
     ArrayList<String> blockedlist;
+    boolean keepRunning = false;
+    LockWindow window;
+    Handler handler;
 
     @Nullable
     @Override
@@ -67,25 +73,34 @@ public class LockService extends Service {
         acquire = new MainActivity();
         blockedlist = new ArrayList<String>();
 
-        Timer timer  =  new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                blockedlist = retrieveList(blockedlist);
-                Log.d("check","" + blockedlist);
-                String app = getTopApp(getApplicationContext(), activityManager);
-                app = getAppNameFromPkgName(getApplicationContext(), app);
-                Log.d("appname","" + app.trim());
-                Log.d("appname","" + blockedlist);
-                if (blockedlist.contains(app.trim())) {
-                    // instantiate block screen here
-                    Log.d("check","put block here");
-                }
-            }
-        }, 1000, 1000);
+        keepRunning = true;
+        window = new LockWindow(this);
+        // Start the initial runnable task by posting through the handler
+        handler = new Handler();
+        handler.post(runTask);
 
         return START_STICKY;
     }
+
+    private Runnable runTask = new Runnable() {
+        @Override
+        public void run() {
+            // Execute tasks on main thread
+            Log.d("Handlers", "Called on main thread");
+            blockedlist = retrieveList(blockedlist);
+            Log.d("check","" + blockedlist);
+            String app = getTopApp(getApplicationContext(), activityManager);
+            app = getAppNameFromPkgName(getApplicationContext(), app);
+            Log.d("appname","" + app.trim());
+            Log.d("list","" + blockedlist);
+            if (blockedlist.contains(app.trim())) {
+                // instantiate block screen here
+                Log.d("check","put block here");
+                window.open();
+            }
+            handler.postDelayed(this, 1000);
+        }
+    };
 
     @Override
     public void onCreate() {
@@ -99,6 +114,7 @@ public class LockService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        keepRunning = false;
 
         Intent broadcastIntent = new Intent();
         broadcastIntent.setAction("restartservice");
@@ -151,6 +167,7 @@ public class LockService extends Service {
     public ArrayList<String> retrieveList(ArrayList<String> listblock) {
         Set<String> set = block.getStringSet("blocklist", null);
         if(set != null) {
+            listblock.clear();
             listblock.addAll(set);
             Log.d("retrievesharedPref","retrieved "+listblock);
             return listblock;
